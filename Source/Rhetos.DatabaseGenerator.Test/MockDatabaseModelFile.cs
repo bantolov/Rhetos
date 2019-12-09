@@ -19,15 +19,16 @@
 
 using Rhetos.Dsl;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
-namespace Rhetos.DatabaseGenerator
+namespace Rhetos.DatabaseGenerator.Test
 {
-    public class NewConceptApplication
+    public class MockDatabaseModelFile : IDatabaseModelFile
     {
-        public ConceptApplication ConceptApplication;
-        public IConceptInfo ConceptInfo;
-        public IConceptDatabaseDefinition ConceptImplementation;
-        public Type ConceptImplementationType;
+        public DatabaseModel DatabaseModel { get; set; }
+
+        public DatabaseModel Load() => DatabaseModel;
+
+        public void Save(DatabaseModel databaseModel) => DatabaseModel = databaseModel;
     }
 }

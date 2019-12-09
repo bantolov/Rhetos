@@ -21,22 +21,19 @@ using System;
 
 namespace Rhetos.DatabaseGenerator
 {
-    public struct Dependency : IEquatable<Dependency>
+    public class CodeGeneratorDependency : IEquatable<CodeGeneratorDependency>
     {
-        public NewConceptApplication DependsOn;
-        public NewConceptApplication Dependent;
-        public string DebugInfo;
+        public CodeGenerator DependsOn;
+        public CodeGenerator Dependent;
 
-        public bool Equals(Dependency other)
+        public bool Equals(CodeGeneratorDependency other)
         {
-            return other.DependsOn.ConceptApplication.GetConceptApplicationKey().Equals(DependsOn.ConceptApplication.GetConceptApplicationKey())
-                   && other.Dependent.ConceptApplication.GetConceptApplicationKey().Equals(Dependent.ConceptApplication.GetConceptApplicationKey())
-                   && other.DebugInfo == DebugInfo;
+            return other.DependsOn.Id == DependsOn.Id && other.Dependent.Id == Dependent.Id;
         }
 
         public override int GetHashCode()
         {
-            return DependsOn.ConceptApplication.ConceptInfoKey.GetHashCode() ^ Dependent.ConceptApplication.ConceptInfoKey.GetHashCode();
+            return DependsOn.Id.GetHashCode() ^ Dependent.Id.GetHashCode();
         }
     }
 }

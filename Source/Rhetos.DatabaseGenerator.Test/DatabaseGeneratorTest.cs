@@ -17,12 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using Autofac.Features.Indexed;
-using Autofac.Features.Metadata;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rhetos.Compiler;
 using Rhetos.Dsl;
-using Rhetos.Extensibility;
 using Rhetos.TestCommon;
 using Rhetos.Utilities;
 using System;
@@ -70,11 +66,11 @@ namespace Rhetos.DatabaseGenerator.Test
             public string Name { get; set; }
         }
 
-        private static NewConceptApplication CreateBaseCiApplication(string name, IConceptDatabaseDefinition implementation = null)
+        private static CodeGenerator CreateBaseCiApplication(string name, IConceptDatabaseDefinition implementation = null)
         {
             implementation = implementation ?? new SimpleConceptImplementation();
             var conceptInfo = new BaseCi { Name = name };
-            return new NewConceptApplication(conceptInfo, implementation)
+            return new CodeGenerator(conceptInfo, implementation)
             {
                 CreateQuery = implementation.CreateDatabaseStructure(conceptInfo),
                 RemoveQuery = implementation.RemoveDatabaseStructure(conceptInfo),
@@ -88,9 +84,9 @@ namespace Rhetos.DatabaseGenerator.Test
             public string Data { get; set; }
         }
 
-        private static NewConceptApplication CreateSimpleCiApplication(string name, string sql = null, string data = null, ConceptApplication dependsOn = null, IConceptDatabaseDefinition implementation = null)
+        private static CodeGenerator CreateSimpleCiApplication(string name, string sql = null, string data = null, ConceptApplication dependsOn = null, IConceptDatabaseDefinition implementation = null)
         {
-            return new NewConceptApplication(new SimpleCi { Name = name, Data = data ?? $"{name}Data" }, implementation ?? new SimpleConceptImplementation())
+            return new CodeGenerator(new SimpleCi { Name = name, Data = data ?? $"{name}Data" }, implementation ?? new SimpleConceptImplementation())
             {
                 CreateQuery = sql ?? $"{name}Sql",
                 DependsOn = dependsOn == null ? new ConceptApplicationDependency[] { } : new[] { new ConceptApplicationDependency { ConceptApplication = dependsOn } }
@@ -103,9 +99,9 @@ namespace Rhetos.DatabaseGenerator.Test
             public SimpleCi Reference { get; set; }
             public string Data { get; set; }
 
-            public static NewConceptApplication CreateApplication(NewConceptApplication reference, string sql = null)
+            public static CodeGenerator CreateApplication(CodeGenerator reference, string sql = null)
             {
-                return new NewConceptApplication(
+                return new CodeGenerator(
                     new ReferencingCi { Reference = (SimpleCi)(reference.ConceptInfo), Data = "data" },
                     new SimpleConceptImplementation())
                 {
@@ -121,9 +117,9 @@ namespace Rhetos.DatabaseGenerator.Test
             public ReferencingCi Reference { get; set; }
             public string Data { get; set; }
 
-            public static NewConceptApplication CreateApplication(string sql, NewConceptApplication reference)
+            public static CodeGenerator CreateApplication(string sql, CodeGenerator reference)
             {
-                return new NewConceptApplication(
+                return new CodeGenerator(
                     new ReferenceToReferencingCi { Reference = (ReferencingCi)(reference.ConceptInfo), Data = "data" },
                     new SimpleConceptImplementation())
                 {
@@ -143,10 +139,10 @@ namespace Rhetos.DatabaseGenerator.Test
             (string Report,
             MockSqlExecuter SqlExecuter,
             List<ConceptApplication> RemovedConcepts,
-            List<NewConceptApplication> InsertedConcepts)
+            List<CodeGenerator> InsertedConcepts)
             DatabaseGeneratorUpdateDatabase(
                 IEnumerable<ConceptApplication> oldApplications,
-                IEnumerable<NewConceptApplication> newApplications,
+                IEnumerable<CodeGenerator> newApplications,
                 bool computeDependencies = true)
         {
             foreach (var ca in oldApplications)
@@ -154,7 +150,7 @@ namespace Rhetos.DatabaseGenerator.Test
 
             if (computeDependencies)
             {
-                var duplicate = oldApplications.Cast<NewConceptApplication>().Intersect(newApplications).FirstOrDefault();
+                var duplicate = oldApplications.Cast<CodeGenerator>().Intersect(newApplications).FirstOrDefault();
                 if (duplicate != null)
                     Assert.Fail($"Incorrect test input data: newApplications contains an instance from oldApplications: {duplicate}.");
 
@@ -166,7 +162,7 @@ namespace Rhetos.DatabaseGenerator.Test
                 var databasePlugins = MockDatabasePluginsContainer.Create(implementations);
 
                 var databaseModelBuilder = new DatabaseModelGeneratorAccessor(databasePlugins, null);
-                databaseModelBuilder.ComputeDependsOn(oldApplications.Cast<NewConceptApplication>());
+                databaseModelBuilder.ComputeDependsOn(oldApplications.Cast<CodeGenerator>());
                 databaseModelBuilder.ComputeDependsOn(newApplications);
                 TestUtility.Dump(oldApplications, a => $"\r\n{a} DEPENDS ON:{string.Concat(a.DependsOn.Select(d => $"\r\n - {d.ConceptApplication}"))}.");
                 TestUtility.Dump(newApplications, a => $"\r\n{a} DEPENDS ON:{string.Concat(a.DependsOn.Select(d => $"\r\n - {d.ConceptApplication}"))}.");
@@ -196,7 +192,7 @@ namespace Rhetos.DatabaseGenerator.Test
                 (Report: string.Join(", ", sqlExecuter.ExecutedScriptsWithTransaction.SelectMany(script => script.Item1)),
                 SqlExecuter: sqlExecuter,
                 RemovedConcepts: conceptApplicationRepository.DeletedLog,
-                InsertedConcepts: conceptApplicationRepository.InsertedLog.Cast<NewConceptApplication>().ToList());
+                InsertedConcepts: conceptApplicationRepository.InsertedLog.Cast<CodeGenerator>().ToList());
         }
 
         //============================================================================
@@ -205,7 +201,7 @@ namespace Rhetos.DatabaseGenerator.Test
         public void NoChange()
         {
             var oldApplications = new List<ConceptApplication> { CreateSimpleCiApplication("unchanged") };
-            var newApplications = new List<NewConceptApplication> { CreateSimpleCiApplication("unchanged") };
+            var newApplications = new List<CodeGenerator> { CreateSimpleCiApplication("unchanged") };
 
             Assert.AreEqual("", DatabaseGeneratorUpdateDatabase(oldApplications, newApplications).Report);
         }
@@ -214,7 +210,7 @@ namespace Rhetos.DatabaseGenerator.Test
         public void SimpleChange()
         {
             var oldApplications = new List<ConceptApplication> { CreateSimpleCiApplication("A", "old"), CreateSimpleCiApplication("B", "unchanged") };
-            var newApplications = new List<NewConceptApplication> { CreateSimpleCiApplication("B", "unchanged"), CreateSimpleCiApplication("A", "newASql") };
+            var newApplications = new List<CodeGenerator> { CreateSimpleCiApplication("B", "unchanged"), CreateSimpleCiApplication("A", "newASql") };
 
             Assert.AreEqual(
                 "del BaseCi A, newASql, ins BaseCi A",
@@ -230,7 +226,7 @@ namespace Rhetos.DatabaseGenerator.Test
             var dependentV2Unchanged = ReferencingCi.CreateApplication(simpleV2);
 
             var oldApplications = new List<ConceptApplication> { simpleV1, dependentV1Unchanged };
-            var newApplications = new List<NewConceptApplication> { simpleV2, dependentV2Unchanged };
+            var newApplications = new List<CodeGenerator> { simpleV2, dependentV2Unchanged };
 
             var dbUpdate = DatabaseGeneratorUpdateDatabase(oldApplications, newApplications);
 
@@ -252,11 +248,11 @@ namespace Rhetos.DatabaseGenerator.Test
             Assert.IsTrue(dependentV1Unchanged.GetConceptApplicationKey().Equals(dependentV2Unchanged.GetConceptApplicationKey()), "Test initialization: Dependent concept has not changed, the referenced concept has changed (different concept key).");
 
             var oldApplications = new List<ConceptApplication> { simpleV1, dependentV1Unchanged };
-            var newApplications = new List<NewConceptApplication> { simpleV2, dependentV2Unchanged };
+            var newApplications = new List<CodeGenerator> { simpleV2, dependentV2Unchanged };
 
             var dbUpdate = DatabaseGeneratorUpdateDatabase(oldApplications, newApplications);
 
-            var removedReferencing = (ReferencingCi)dbUpdate.RemovedConcepts.Select(ca => ((NewConceptApplication)ca).ConceptInfo).First(ci => ci is ReferencingCi);
+            var removedReferencing = (ReferencingCi)dbUpdate.RemovedConcepts.Select(ca => ((CodeGenerator)ca).ConceptInfo).First(ci => ci is ReferencingCi);
             var insertedReferencing = (ReferencingCi)dbUpdate.InsertedConcepts.Select(ca => ca.ConceptInfo).First(ci => ci is ReferencingCi);
 
             Assert.AreEqual("data1", removedReferencing.Reference.Data, "Removed reference should point to old version of changed concept.");
@@ -273,7 +269,7 @@ namespace Rhetos.DatabaseGenerator.Test
             Assert.IsTrue(dependentC1Unchanged.GetConceptApplicationKey().Equals(dependentC2Unchanged.GetConceptApplicationKey()), "Test initialization: Dependent concept has not changed, the referenced concept has changed (different implementation, same concept key).");
 
             var oldApplications = new List<ConceptApplication> { simpleC1, dependentC1Unchanged };
-            var newApplications = new List<NewConceptApplication> { simpleC2, dependentC2Unchanged };
+            var newApplications = new List<CodeGenerator> { simpleC2, dependentC2Unchanged };
 
             var dbUpdate = DatabaseGeneratorUpdateDatabase(oldApplications, newApplications);
 
@@ -284,7 +280,7 @@ namespace Rhetos.DatabaseGenerator.Test
             Assert.IsTrue(dbUpdate.InsertedConcepts.Contains(simpleC2));
             Assert.IsTrue(dbUpdate.InsertedConcepts.Contains(dependentC2Unchanged));
 
-            var removedReferencing = dbUpdate.RemovedConcepts.Select(ca => ((NewConceptApplication)ca).ConceptInfo).OfType<ReferencingCi>().Single();
+            var removedReferencing = dbUpdate.RemovedConcepts.Select(ca => ((CodeGenerator)ca).ConceptInfo).OfType<ReferencingCi>().Single();
             var insertedReferencing = dbUpdate.InsertedConcepts.Select(ca => ca.ConceptInfo).OfType<ReferencingCi>().Single();
             Assert.AreNotSame(simpleC1.ConceptInfo, simpleC2.ConceptInfo);
             Assert.AreSame(simpleC1.ConceptInfo, removedReferencing.Reference, "Removed reference should point to old version of changed concept.");
@@ -300,7 +296,7 @@ namespace Rhetos.DatabaseGenerator.Test
             var simple2b = CreateSimpleCiApplication("b", "sqlb", dependsOn: simple2a); // Adding a dependency that did not exist in the version 1.
 
             var oldApplications = new List<ConceptApplication> { simple1a, simple1b };
-            var newApplications = new List<NewConceptApplication> { simple2a, simple2b };
+            var newApplications = new List<CodeGenerator> { simple2a, simple2b };
 
             var dbUpdate = DatabaseGeneratorUpdateDatabase(oldApplications, newApplications, computeDependencies: false);
 
@@ -319,7 +315,7 @@ namespace Rhetos.DatabaseGenerator.Test
             var secondReference2 = ReferenceToReferencingCi.CreateApplication("2", dependentUnchanged2);
 
             var oldApplications = new List<ConceptApplication> { simpleV1, dependentUnchanged1, secondReference1 };
-            var newApplications = new List<NewConceptApplication> { simpleV2, dependentUnchanged2, secondReference2 };
+            var newApplications = new List<CodeGenerator> { simpleV2, dependentUnchanged2, secondReference2 };
 
             var dbUpdate = DatabaseGeneratorUpdateDatabase(oldApplications, newApplications);
 
@@ -342,7 +338,7 @@ namespace Rhetos.DatabaseGenerator.Test
             var c2 = ReferenceToReferencingCi.CreateApplication("c", b2);
 
             var oldApplications = new List<ConceptApplication> { aold, c1 }; // A and C have database generator implementations, but B doesn't.
-            var newApplications = new List<NewConceptApplication> { c2, anew };
+            var newApplications = new List<CodeGenerator> { c2, anew };
 
             var dbUpdate = DatabaseGeneratorUpdateDatabase(oldApplications, newApplications);
 
@@ -359,7 +355,7 @@ namespace Rhetos.DatabaseGenerator.Test
                     CreateBaseCiApplication("A", new SimpleConceptImplementation()),
                     CreateBaseCiApplication("B", new NoTransactionConceptImplementation()),
                     CreateBaseCiApplication("C", new SimpleConceptImplementation()) };
-            var newApplications = new List<NewConceptApplication> {
+            var newApplications = new List<CodeGenerator> {
                     CreateBaseCiApplication("D", new SimpleConceptImplementation()),
                     CreateBaseCiApplication("E", new NoTransactionConceptImplementation()),
                     CreateBaseCiApplication("F", new SimpleConceptImplementation()) };

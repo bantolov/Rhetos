@@ -34,7 +34,7 @@ namespace Rhetos.DatabaseGenerator
 
         public string CreateQuery; // SQL query that creates the concept in database.
         public string RemoveQuery; // SQL query that removes the concept from database.
-        public ConceptApplicationDependency[] DependsOn;
+        public ConceptApplication[] DependsOn;
         public int OldCreationOrder;
 
         private string _conceptApplicationKey;
@@ -68,7 +68,7 @@ namespace Rhetos.DatabaseGenerator
         {
             return conceptApplications
                 .SelectMany(dependent => dependent.DependsOn
-                    .Select(dependsOn => Tuple.Create(dependsOn.ConceptApplication, dependent)))
+                    .Select(dependsOn => Tuple.Create(dependsOn, dependent)))
                 .Where(dependency => dependency.Item1 != dependency.Item2)
                 .ToList();
         }

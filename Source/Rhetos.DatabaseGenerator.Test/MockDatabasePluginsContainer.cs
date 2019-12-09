@@ -11,8 +11,11 @@ namespace Rhetos.DatabaseGenerator.Test
 {
     public static class MockDatabasePluginsContainer
     {
-        public static PluginsContainer<IConceptDatabaseDefinition> Create(PluginsMetadataList<IConceptDatabaseDefinition> conceptImplementations)
+        public static PluginsContainer<IConceptDatabaseDefinition> Create(PluginsMetadataList<IConceptDatabaseDefinition> conceptImplementations = null)
         {
+            if (conceptImplementations == null)
+                conceptImplementations = new PluginsMetadataList<IConceptDatabaseDefinition>();
+
             Lazy<IEnumerable<IConceptDatabaseDefinition>> plugins = new Lazy<IEnumerable<IConceptDatabaseDefinition>>(() =>
                 conceptImplementations.Select(pm => pm.Plugin));
             Lazy<IEnumerable<Meta<IConceptDatabaseDefinition>>> pluginsWithMetadata = new Lazy<IEnumerable<Meta<IConceptDatabaseDefinition>>>(() =>
