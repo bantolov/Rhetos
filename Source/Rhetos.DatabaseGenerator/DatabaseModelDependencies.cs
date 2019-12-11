@@ -29,14 +29,14 @@ using System.Text;
 namespace Rhetos.DatabaseGenerator
 {
     /// <summary>
-    /// Helper methods for handling dependencies in database model code generators.
+    /// Utility class with helper methods for handling dependencies between code generators.
     /// </summary>
-    public class DatabaseModelGeneratorDependencies
+    public class DatabaseModelDependencies
     {
         private readonly ILogger _logger;
         private readonly ILogger _performanceLogger;
 
-        public DatabaseModelGeneratorDependencies(ILogProvider logProvider)
+        public DatabaseModelDependencies(ILogProvider logProvider)
         {
             _logger = logProvider.GetLogger(GetType().Name);
             _performanceLogger = logProvider.GetLogger("Performance");
@@ -173,12 +173,12 @@ namespace Rhetos.DatabaseGenerator
         public string ReportDependencies(string title, List<CodeGeneratorDependency> codeGeneratorDependencies)
         {
             var report = new StringBuilder();
-            report.AppendLine($"{title} dependencies:");
+            report.Append($"{title} dependencies:");
             foreach (var dependentGroup in codeGeneratorDependencies.GroupBy(d => d.Dependent))
             {
-                report.AppendLine($"{dependentGroup.Key} depends on:");
+                report.Append($"\r\n{dependentGroup.Key} depends on:");
                 foreach (var dependency in dependentGroup)
-                    report.AppendLine($"- {dependency.DependsOn}");
+                    report.Append($"\r\n- {dependency.DependsOn}");
             }
             return report.ToString();
         }

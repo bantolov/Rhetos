@@ -17,11 +17,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace Rhetos.DatabaseGenerator
+using Rhetos.Dsl;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Rhetos.DatabaseGenerator.Test
 {
-    public interface IDatabaseModelFile
+    public static class ConcaptApplicationExtension
     {
-        void Save(DatabaseModel databaseModel);
-        DatabaseModel Load();
+        public static ConceptApplication Find<T>(this IEnumerable<ConceptApplication> conceptApplications) where T : IConceptInfo
+        {
+            return conceptApplications.Where(ca => ca.ConceptInfoTypeName.StartsWith(typeof(T).FullName + ",")).Single();
+        }
     }
 }

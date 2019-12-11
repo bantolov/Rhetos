@@ -289,18 +289,18 @@ namespace Rhetos.Utilities.Test
             var results = types.Select(t => CsUtility.GetShortTypeName(t)).ToList();
 
             string expected =
-@"int
-string
-CsUtilityTest+InnerClass
-List`1<int>
-List`1<string>
-List`1<CsUtilityTest+InnerClass>
-int[]
-string[]
-CsUtilityTest+InnerClass[]
-Dictionary<List`1<CsUtilityTest+InnerClass[]>, CsUtilityTest+InnerClass>";
+@"Int32
+String
+InnerClass
+List`1<Int32>
+List`1<String>
+List`1<InnerClass>
+Int32[]
+String[]
+InnerClass[]
+Dictionary`2<List`1<InnerClass[]>, InnerClass>";
 
-            TestUtility.AssertAreEqualByLine(expected, TestUtility.DumpSorted(results));
+            TestUtility.AssertAreEqualByLine(expected, string.Join("\r\n", results));
         }
 
         class InnerClass { };

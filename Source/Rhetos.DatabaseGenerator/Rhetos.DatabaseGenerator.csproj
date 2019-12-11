@@ -122,7 +122,8 @@
   <ItemGroup>
     <Compile Include="ConceptApplication.cs" />
     <Compile Include="DatabaseModelFile.cs" />
-    <Compile Include="DatabaseModelGeneratorDependencies.cs" />
+    <Compile Include="DatabaseModelBuilder.cs" />
+    <Compile Include="DatabaseModelDependencies.cs" />
     <Compile Include="DatabaseModelGenerator.cs" />
     <Compile Include="ConceptDataMigrationGenerator.cs" />
     <Compile Include="DataMigrationScriptBuilder.cs" />
@@ -133,7 +134,6 @@
     <Compile Include="DatabaseGenerator.cs" />
     <Compile Include="ConceptApplicationRepository.cs" />
     <Compile Include="CodeGeneratorDependency.cs" />
-    <Compile Include="IDatabaseModelFile.cs" />
     <Compile Include="CodeGenerator.cs" />
     <Compile Include="NullImplementation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

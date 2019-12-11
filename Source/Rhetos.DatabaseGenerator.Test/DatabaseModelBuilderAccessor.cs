@@ -17,31 +17,29 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using Rhetos.Dsl;
 using Rhetos.Extensibility;
-using System;
+using Rhetos.TestCommon;
+using Rhetos.Utilities;
 using System.Collections.Generic;
 
-namespace Rhetos.DatabaseGenerator
+namespace Rhetos.DatabaseGenerator.Test
 {
-    /// <summary>
-    /// A deployment plugin that creates the database model file when building Rhetos application.
-    /// </summary>
-    public class DatabaseModelGenerator : IGenerator
+    public class DatabaseModelBuilderAccessor : DatabaseModelBuilder, ITestAccessor
     {
-        private readonly DatabaseModelBuilder _databaseModelBuilder;
-        private readonly DatabaseModelFile _databaseModelFile;
-
-        public DatabaseModelGenerator(DatabaseModelBuilder databaseModelBuilder, DatabaseModelFile databaseModelFile)
+        public DatabaseModelBuilderAccessor(IPluginsContainer<IConceptDatabaseDefinition> plugins, IDslModel dslModel)
+            : base(plugins, dslModel, new ConsoleLogProvider(), new DatabaseModelDependencies(new ConsoleLogProvider()))
         {
-            _databaseModelBuilder = databaseModelBuilder;
-            _databaseModelFile = databaseModelFile;
         }
 
-        public void Generate()
+        public static string GetCodeGeneratorSeparator(int codeGeneratorId)
         {
-            _databaseModelFile.Save(_databaseModelBuilder.CreateDatabaseModel());
+            return (string)TestAccessorHelpers.Invoke<DatabaseModelBuilder>("GetCodeGeneratorSeparator", codeGeneratorId);
         }
 
-        IEnumerable<string> IGenerator.Dependencies => Array.Empty<string>();
+        public static Dictionary<int, string> ExtractCreateQueries(string generatedSqlCode)
+        {
+            return (Dictionary<int, string>)TestAccessorHelpers.Invoke<DatabaseModelBuilder>("ExtractCreateQueries", generatedSqlCode);
+        }
     }
 }

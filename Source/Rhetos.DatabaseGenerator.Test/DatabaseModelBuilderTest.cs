@@ -29,7 +29,7 @@ using System.Linq;
 namespace Rhetos.DatabaseGenerator.Test
 {
     [TestClass]
-    public class DatabaseModelGeneratorTest
+    public class DatabaseModelBuilderTest
     {
         #region Helper classes
 
@@ -82,11 +82,6 @@ namespace Rhetos.DatabaseGenerator.Test
 
         //============================================================================
 
-        private static DatabaseModelGeneratorDependencies NewDatabaseModelGeneratorDependencies()
-        {
-            return new DatabaseModelGeneratorDependencies(new ConsoleLogProvider());
-        }
-
         [TestMethod]
         public void ExtractDependenciesFromConceptInfosTest()
         {
@@ -99,9 +94,15 @@ namespace Rhetos.DatabaseGenerator.Test
             var r5 = MultipleReferencingCi.CreateApplication("5", c, c);
             var r4 = MultipleReferencingCi.CreateApplication("4", c, r5);
 
+            var conceptImplementations = new PluginsMetadataList<IConceptDatabaseDefinition>
+            {
+                new NullImplementation(),
+                { new SimpleConceptImplementation(), typeof(SimpleCi) },
+            };
+
             var all = new List<CodeGenerator> { a, b, c, r1, r2, r3, r4, r5 };
-            var dependencies = NewDatabaseModelGeneratorDependencies()
-                .ExtractCodeGeneratorDependencies(all, MockDatabasePluginsContainer.Create());
+            var dependencies = new DatabaseModelDependencies(new ConsoleLogProvider())
+                .ExtractCodeGeneratorDependencies(all, MockDatabasePluginsContainer.Create(conceptImplementations));
 
             string result = string.Join(" ", dependencies
                 .Select(d => ((dynamic)d).DependsOn.ConceptInfo.Name + "<" + ((dynamic)d).Dependent.ConceptInfo.Name)
@@ -120,12 +121,12 @@ namespace Rhetos.DatabaseGenerator.Test
             const string createQuery2 = "create query 2";
 
             var sqlCodeBuilder = new CodeBuilder("/*", "*/");
-            sqlCodeBuilder.InsertCode(DatabaseModelGeneratorAccessor.GetCodeGeneratorSeparator(ca1.Id));
+            sqlCodeBuilder.InsertCode(DatabaseModelBuilderAccessor.GetCodeGeneratorSeparator(ca1.Id));
             sqlCodeBuilder.InsertCode(createQuery1);
-            sqlCodeBuilder.InsertCode(DatabaseModelGeneratorAccessor.GetCodeGeneratorSeparator(ca2.Id));
+            sqlCodeBuilder.InsertCode(DatabaseModelBuilderAccessor.GetCodeGeneratorSeparator(ca2.Id));
             sqlCodeBuilder.InsertCode(createQuery2);
 
-            var createQueries = DatabaseModelGeneratorAccessor.ExtractCreateQueries(sqlCodeBuilder.GeneratedCode);
+            var createQueries = DatabaseModelBuilderAccessor.ExtractCreateQueries(sqlCodeBuilder.GeneratedCode);
             Assert.AreEqual(
                 $"{ca1.Id}:create query 1, {ca2.Id}:create query 2",
                 TestUtility.DumpSorted(createQueries, cq => $"{cq.Key}:{cq.Value}"));
@@ -141,13 +142,13 @@ namespace Rhetos.DatabaseGenerator.Test
 
             var sqlCodeBuilder = new CodeBuilder("/*", "*/");
             sqlCodeBuilder.InsertCode("before first");
-            sqlCodeBuilder.InsertCode(DatabaseModelGeneratorAccessor.GetCodeGeneratorSeparator(0));
+            sqlCodeBuilder.InsertCode(DatabaseModelBuilderAccessor.GetCodeGeneratorSeparator(0));
             sqlCodeBuilder.InsertCode(createQuery1);
-            sqlCodeBuilder.InsertCode(DatabaseModelGeneratorAccessor.GetCodeGeneratorSeparator(1));
+            sqlCodeBuilder.InsertCode(DatabaseModelBuilderAccessor.GetCodeGeneratorSeparator(1));
             sqlCodeBuilder.InsertCode(createQuery2);
 
             TestUtility.ShouldFail<FrameworkException>(
-                () => DatabaseModelGeneratorAccessor.ExtractCreateQueries(sqlCodeBuilder.GeneratedCode),
+                () => DatabaseModelBuilderAccessor.ExtractCreateQueries(sqlCodeBuilder.GeneratedCode),
                 "The first segment should be empty");
         }
 
@@ -156,7 +157,7 @@ namespace Rhetos.DatabaseGenerator.Test
         {
             var sqlCodeBuilder = new CodeBuilder("/*", "*/");
 
-            var createQueries = DatabaseModelGeneratorAccessor.ExtractCreateQueries(sqlCodeBuilder.GeneratedCode);
+            var createQueries = DatabaseModelBuilderAccessor.ExtractCreateQueries(sqlCodeBuilder.GeneratedCode);
             Assert.AreEqual(
                 "",
                 TestUtility.DumpSorted(createQueries, cq => $"{cq.Key}:{cq.Value}"));
@@ -170,7 +171,7 @@ namespace Rhetos.DatabaseGenerator.Test
 
             var newConceptApplications = new List<CodeGenerator>();
             TestUtility.ShouldFail<FrameworkException>(
-                () => DatabaseModelGeneratorAccessor.ExtractCreateQueries(sqlCodeBuilder.GeneratedCode),
+                () => DatabaseModelBuilderAccessor.ExtractCreateQueries(sqlCodeBuilder.GeneratedCode),
                 "The first segment should be empty");
         }
 
@@ -194,8 +195,8 @@ namespace Rhetos.DatabaseGenerator.Test
 
             var conceptInfoDependencies = new[] { Tuple.Create(ci2, ci1) };
 
-            var actual = NewDatabaseModelGeneratorDependencies().ConceptDependencyToImplementationDependency(
-                conceptInfoDependencies, new[] { ca1a, ca1b, ca2a, ca2b });
+            var actual = new DatabaseModelDependencies(new ConsoleLogProvider())
+                .ConceptDependencyToImplementationDependency(conceptInfoDependencies, new[] { ca1a, ca1b, ca2a, ca2b });
 
             Assert.AreEqual(
                 "2a-1a, 2a-1b, 2b-1a, 2b-1b",
@@ -226,8 +227,8 @@ namespace Rhetos.DatabaseGenerator.Test
             var conceptImplementations = new PluginsMetadataList<IConceptDatabaseDefinition>
             {
                 new NullImplementation(),
-                { new SimpleConceptImplementation(), new Dictionary<string, object> { { "Implements", typeof(SimpleCi) } } },
-                { new ExtendingConceptImplementation(), new Dictionary<string, object> { { "Implements", typeof(SimpleCi3) } } },
+                { new SimpleConceptImplementation(), typeof(SimpleCi) },
+                { new ExtendingConceptImplementation(), typeof(SimpleCi3) },
             };
 
             tempConceptInfoDependencies = new[] { Tuple.Create(ci2, ci1), Tuple.Create(ci3, ci2) };
@@ -236,10 +237,8 @@ namespace Rhetos.DatabaseGenerator.Test
 
             var dslModel = new MockDslModel(new[] { ci1, ci2, ci3 });
             var databasePlugins = MockDatabasePluginsContainer.Create(conceptImplementations);
-            var databaseModelFile = new MockDatabaseModelFile();
-            var databaseModelGenerator = new DatabaseModelGeneratorAccessor(databasePlugins, dslModel, databaseModelFile);
-            databaseModelGenerator.Generate();
-            var conceptApplications = databaseModelFile.DatabaseModel.ConceptApplications;
+            var databaseModelBuilder = new DatabaseModelBuilderAccessor(databasePlugins, dslModel);
+            var conceptApplications = databaseModelBuilder.CreateDatabaseModel().ConceptApplications;
 
             tempConceptInfoDependencies = null;
 
