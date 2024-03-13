@@ -17,6 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using Rhetos.Utilities;
+
 namespace Rhetos.Dom.DefaultConcepts
 {
     /// <summary>
@@ -56,5 +58,17 @@ namespace Rhetos.Dom.DefaultConcepts
         /// If enabled on EF Core, the NuGet package "Microsoft.EntityFrameworkCore.Proxies" must be installed.
         /// </summary>
         public bool EntityFrameworkCoreUseLazyLoading { get; set; } = false;
+
+        /// <summary>
+        /// This options will mark the properties as required in the DbContext model.
+        /// This option can help simplify generated SQL queries by removing NULL check, but only if
+        /// <see cref="RhetosAppOptions.EntityFrameworkUseDatabaseNullSemantics"/> is true.
+        /// If the NullSemantics option is false, then the SQL queries already won't have null checks.
+        /// The downside is that the EF Core will not allow loading any data with null values
+        /// (SqlNullValueException), which can cause issues with app-level data validations
+        /// or working with old inconsistent data, considering that Rhetos does not create NOT NULL
+        /// constraint for the Required properties.
+        /// </summary>
+        public bool EntityFrameworkCoreMarkPropertiesRequired { get; set; } = false;
     }
 }
