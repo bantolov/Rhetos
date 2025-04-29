@@ -44,8 +44,6 @@
   <Reference Relative="..\Rhetos.Core.dll">..\Rhetos.Core.dll</Reference>
   <Reference Relative="..\Rhetos.Core.DslParser.dll">..\Rhetos.Core.DslParser.dll</Reference>
   <Reference Relative="..\Rhetos.Core.Integration.dll">..\Rhetos.Core.Integration.dll</Reference>
-  <Reference Relative="..\runtimes\win\lib\net8.0\System.Diagnostics.EventLog.dll">..\runtimes\win\lib\net8.0\System.Diagnostics.EventLog.dll</Reference>
-  <Reference Relative="..\runtimes\win\lib\net8.0\System.Diagnostics.EventLog.Messages.dll">..\runtimes\win\lib\net8.0\System.Diagnostics.EventLog.Messages.dll</Reference>
   <Namespace>Autofac</Namespace>
   <Namespace>Rhetos</Namespace>
   <Namespace>Rhetos.Configuration.Autofac</Namespace>
