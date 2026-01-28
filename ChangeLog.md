@@ -1,5 +1,10 @@
 ﻿# Rhetos release notes
 
+## 5.6.0 (TO BE RELEASED)
+
+* New generic property filters: `ContainsAny`, `StartsWithAny`, `EndsWithAny`.
+  Also available in [REST API](https://github.com/rhetos/restgenerator#filters).
+
 ## 5.5.0 (2025-04-16)
 
 ### New features
