@@ -221,14 +221,14 @@ namespace CommonConcepts.Test
                 FilterName(repository, "containsany", new[] { "ef", "3" }, "3, 4");
                 FilterName(repository, "containsany", new[] { "ef", "2" }, "2, 3, 4");
                 FilterName(repository, "containsany", Array.Empty<string>(), "");
-                FilterName(repository, "containsany", new[] { "" }, "1, 2, 3, 4");
+                FilterName(repository, "containsany", new[] { "" }, "");
 
                 FilterName(repository, "startswithany", new[] { "abc" }, "1, 2");
                 FilterName(repository, "startswithany", new[] { "a" }, "1, 2");
                 FilterName(repository, "startswithany", new[] { "a", "ef" }, "1, 2, 4");
                 FilterName(repository, "startswithany", new[] { "ef", "2" }, "4");
                 FilterName(repository, "startswithany", Array.Empty<string>(), "");
-                FilterName(repository, "startswithany", new[] { "" }, "1, 2, 3, 4");
+                FilterName(repository, "startswithany", new[] { "" }, "");
 
                 FilterName(repository, "endswithany", new[] { "1" }, "1");
                 FilterName(repository, "endswithany", new[] { "1", "3" }, "1, 3");
@@ -236,7 +236,7 @@ namespace CommonConcepts.Test
                 FilterName(repository, "endswithany", new[] { "ef" }, "");
                 FilterName(repository, "endswithany", new[] { "ef4" }, "4");
                 FilterName(repository, "endswithany", Array.Empty<string>(), "");
-                FilterName(repository, "endswithany", new[] { "" }, "1, 2, 3, 4");
+                FilterName(repository, "endswithany", new[] { "" }, "");
             }
         }
 

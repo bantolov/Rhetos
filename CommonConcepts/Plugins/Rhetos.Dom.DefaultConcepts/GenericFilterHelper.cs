@@ -307,6 +307,7 @@ namespace Rhetos.Dom.DefaultConcepts
                             MethodInfo dbMethod = typeof(DatabaseExtensionFunctions).GetMethod(dbMethodName);
                             Expression stringMemberAccess = GetStringMemberAccess(memberAccess, propertyBasicType, filter.Operation);
                             var filterExpressions = filterValues
+                                .Where(filterValue => !string.IsNullOrEmpty(filterValue)) // Removed option to return all records with an empty filter, which might be counterintuitive for end users, especially in combination with other values in the list.
                                 .Select(filterValue => Expression.Call(dbMethod, stringMemberAccess, Expression.Constant(filterValue, typeof(string))))
                                 .ToList();
                             if (filterExpressions.Count == 0)
