@@ -24,9 +24,9 @@ REM dotnet test\CommonConcepts.TestApp.PostgreSql\bin\Debug\net10.0\rhetos.dll d
 @REM Running integration tests that use the database.
 dotnet test CommonConceptsTest.sln --no-build || GOTO ErrorTestCommonConcepts
 
-IF EXIST "%ProgramFiles%\LINQPad8\LPRun8.exe" "%ProgramFiles%\LINQPad8\LPRun8.exe" "test\CommonConcepts.TestApp.MsSql\bin\Debug\net10.0\LinqPad\Rhetos DOM.linq" > nul || GOTO Error0
-IF EXIST "%ProgramFiles%\LINQPad8\LPRun8.exe" "%ProgramFiles%\LINQPad8\LPRun8.exe" "test\CommonConcepts.TestApp.MsSqlEf6\bin\Debug\net10.0\LinqPad\Rhetos DOM.linq" > nul || GOTO Error0
-REM IF EXIST "%ProgramFiles%\LINQPad8\LPRun8.exe" "%ProgramFiles%\LINQPad8\LPRun8.exe" "test\CommonConcepts.TestApp.PostgreSql\bin\Debug\net10.0\LinqPad\Rhetos DOM.linq" > nul || GOTO Error0
+IF EXIST "%ProgramFiles%\LINQPad9\LPRun9.exe" "%ProgramFiles%\LINQPad9\LPRun9.exe" -fx=10.0 "test\CommonConcepts.TestApp.MsSql\bin\Debug\net10.0\LinqPad\Rhetos DOM.linq" > nul || GOTO Error0
+IF EXIST "%ProgramFiles%\LINQPad9\LPRun9.exe" "%ProgramFiles%\LINQPad9\LPRun9.exe" -fx=10.0 "test\CommonConcepts.TestApp.MsSqlEf6\bin\Debug\net10.0\LinqPad\Rhetos DOM.linq" > nul || GOTO Error0
+REM IF EXIST "%ProgramFiles%\LINQPad9\LPRun9.exe" "%ProgramFiles%\LINQPad9\LPRun9.exe" -fx=10.0 "test\CommonConcepts.TestApp.PostgreSql\bin\Debug\net10.0\LinqPad\Rhetos DOM.linq" > nul || GOTO Error0
 
 @REM ================================================
 

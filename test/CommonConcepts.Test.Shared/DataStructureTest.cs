@@ -171,7 +171,7 @@ namespace CommonConcepts.Test
                 repository.TestDataStructure.Parent.Insert(new[] { parent });
                 repository.TestDataStructure.Child.Insert(new[] { child });
 
-                Assert.AreEqual(child.ID + " " + parent.ID, repository.TestDataStructure.Child.Query().Select(c => c.ID + " " + c.Parent.ID).Single(),
+                Assert.AreEqual(child.ID + " " + parent.ID, repository.TestDataStructure.Child.Query().Select(c => c.ID + " " + c.Parent.ID).Single().ToLowerInvariant(),
                     "Testing if the Reference concept was properly implemented while using late initialization of the Reference property.");
 
                 repository.TestDataStructure.Parent.Delete(new[] { parent });

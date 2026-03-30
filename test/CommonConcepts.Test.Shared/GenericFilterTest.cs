@@ -623,14 +623,12 @@ WHERE [c].[ParentID] IN (
         public void GenericFilterResultsWithEfCoreOptimizedContains()
         {
             string expectedSql =
-@"DECLARE @__array_0 nvarchar(4000) = N'[""11111111-1111-1111-1111-111111111111"",""22222222-2222-2222-2222-222222222222""]';
+@"DECLARE @array1 uniqueIdentifier = '11111111-1111-1111-1111-111111111111';
+DECLARE @array2 uniqueIdentifier = '22222222-2222-2222-2222-222222222222';
 
 SELECT [c].[ID]
 FROM [TestGenericFilter].[Child] AS [c]
-WHERE [c].[ParentID] IN (
-    SELECT [a].[value]
-    FROM OPENJSON(@__array_0) WITH ([value] UNIQUEIDENTIFIER '$') AS [a]
-)";
+WHERE [c].[ParentID] IN (@array1, @array2)";
             using (var scope = TestScope.Create())
             {
                 var repository = scope.Resolve<Common.DomRepository>();
@@ -639,6 +637,7 @@ WHERE [c].[ParentID] IN (
                 {
                     var query = repository.TestGenericFilter.Child.Query(item => array.Contains(item.ParentID.Value)).Select(item => item.ID);
                     string sql = query.GetSqlQuery();
+                    Console.WriteLine(sql);
                     Assert.AreEqual(expectedSql, sql, "This is just a control query.");
                 }
 
@@ -646,8 +645,9 @@ WHERE [c].[ParentID] IN (
                     var genericFilter = new FilterCriteria { Property = "ParentID", Operation = "In", Value = array };
                     var query = repository.TestGenericFilter.Child.Query(new[] { genericFilter }).Select(item => item.ID);
                     string sql = query.GetSqlQuery();
-                    sql = sql.Replace("[p]", "[a]").Replace("@__p_0", "@__array_0");
-                    Assert.AreEqual(expectedSql, sql, "Generic filter's Contains expression on 'array' should result with optimized SQL that uses OPENJSON.");
+                    Console.WriteLine(sql);
+                    sql = sql.Replace("[p]", "[a]").Replace("@p1", "@array1").Replace("@p2", "@array2");
+                    Assert.AreEqual(expectedSql, sql, "Generic filter's Contains expression on 'array' should result with same query as direct LINQ. Uses 'IN' operator in latest EFCore.");
                 }
             }
         }
@@ -761,7 +761,7 @@ WHERE [c].[ParentID] IN ('11111111-1111-1111-1111-111111111111', '22222222-2222-
             Console.WriteLine(actualReport);
             actualReport = actualReport // Converting EF Core to EF6 style.
                 .Replace("[c]", "[Extent1]")
-                .Replace("@__value_0", "@p__linq__0");
+                .Replace("@value", "@p__linq__0");
 
             TestUtility.AssertAreEqualByLine(expectedReport.ToString(), actualReport.ToString());
         }
