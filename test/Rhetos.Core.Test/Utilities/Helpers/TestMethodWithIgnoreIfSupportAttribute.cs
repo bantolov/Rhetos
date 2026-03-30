@@ -19,6 +19,7 @@
 
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Rhetos.Utilities.Test.Helpers
@@ -30,7 +31,7 @@ namespace Rhetos.Utilities.Test.Helpers
     /// </summary>
     public class TestMethodWithIgnoreIfSupportAttribute : TestMethodAttribute
     {
-        public override TestResult[] Execute(ITestMethod testMethod)
+        public override Task<TestResult[]> ExecuteAsync(ITestMethod testMethod)
         {
             var ignoreAttributes = FindAttributes(testMethod);
 
@@ -40,24 +41,24 @@ namespace Rhetos.Utilities.Test.Helpers
                 if (ignoreAttribute.ShouldIgnore(testMethod))
                 {
                     var message = $"Test not executed. Conditional ignore method '{ignoreAttribute.IgnoreCriteriaMethodName}' evaluated to 'true'.";
-                    return new[]
+                    return Task.FromResult(new[]
                     {
                         new TestResult
                         {
                             Outcome = UnitTestOutcome.Inconclusive,
                             TestFailureException = new AssertInconclusiveException(message)
                         }
-                    };
+                    });
                 }
             }
-            return base.Execute(testMethod);
+            return base.ExecuteAsync(testMethod);
         }
 
         private IEnumerable<IgnoreIfAttribute> FindAttributes(ITestMethod testMethod)
         {
             // Look for an [IgnoreIf] on the method, including any virtuals this method overrides
             var ignoreAttributes = new List<IgnoreIfAttribute>();
-            ignoreAttributes.AddRange(testMethod.GetAttributes<IgnoreIfAttribute>(inherit: true));
+            ignoreAttributes.AddRange(testMethod.GetAttributes<IgnoreIfAttribute>());
 
             // Walk the class hierarchy looking for an [IgnoreIf] attribute
             var type = testMethod.MethodInfo.DeclaringType;

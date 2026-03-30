@@ -16,11 +16,11 @@
       <dependency id="System.CommandLine" version="2.0.0-beta4.22272.1" /> <!-- For RhetosCli. -->
     </dependencies>
     <contentFiles>
-      <files include="any/net8.0/RhetosTools/rhetos.exe" buildAction="None" copyToOutput="true" flatten="true" />
-      <files include="any/net8.0/RhetosTools/rhetos.dll" buildAction="None" copyToOutput="true" flatten="true" />
-      <files include="any/net8.0/RhetosTools/rhetos.runtimeconfig.json" buildAction="None" copyToOutput="true" flatten="true" />
-      <files include="any/net8.0/RhetosTools/rhetos.exe.nlog" buildAction="None" copyToOutput="true" flatten="true" />
-      <files include="any/net8.0/RhetosTools/rhetos.deps.json" buildAction="None" copyToOutput="true" flatten="true" />
+      <files include="any/net10.0/RhetosTools/rhetos.exe" buildAction="None" copyToOutput="true" flatten="true" />
+      <files include="any/net10.0/RhetosTools/rhetos.dll" buildAction="None" copyToOutput="true" flatten="true" />
+      <files include="any/net10.0/RhetosTools/rhetos.runtimeconfig.json" buildAction="None" copyToOutput="true" flatten="true" />
+      <files include="any/net10.0/RhetosTools/rhetos.exe.nlog" buildAction="None" copyToOutput="true" flatten="true" />
+      <files include="any/net10.0/RhetosTools/rhetos.deps.json" buildAction="None" copyToOutput="true" flatten="true" />
     </contentFiles>
   </metadata>
   <files>
@@ -30,10 +30,10 @@
 
     <!-- The "rhetos dbupdate" command is executed from this package (rhetos.dll ends in the app's bin folder).
     This version of Rhetos CLI needs to be on net8 or lower, so that it can run in the context of the net8 host applications. -->
-    <file src="RhetosCli\bin\Debug\net8.0\rhetos.exe" target="contentFiles/any/net8.0/RhetosTools" />
-    <file src="RhetosCli\bin\Debug\net8.0\rhetos.dll" target="contentFiles/any/net8.0/RhetosTools" />
-    <file src="RhetosCli\bin\Debug\net8.0\rhetos.runtimeconfig.json" target="contentFiles/any/net8.0/RhetosTools" />
-    <file src="RhetosCli\bin\Debug\net8.0\rhetos.exe.nlog" target="contentFiles/any/net8.0/RhetosTools" />
-    <file src="RhetosCli\bin\Debug\net8.0\rhetos.deps.json" target="contentFiles/any/net8.0/RhetosTools" />
+    <file src="RhetosCli\bin\Debug\net10.0\rhetos.exe" target="contentFiles/any/net10.0/RhetosTools" />
+    <file src="RhetosCli\bin\Debug\net10.0\rhetos.dll" target="contentFiles/any/net10.0/RhetosTools" />
+    <file src="RhetosCli\bin\Debug\net10.0\rhetos.runtimeconfig.json" target="contentFiles/any/net10.0/RhetosTools" />
+    <file src="RhetosCli\bin\Debug\net10.0\rhetos.exe.nlog" target="contentFiles/any/net10.0/RhetosTools" />
+    <file src="RhetosCli\bin\Debug\net10.0\rhetos.deps.json" target="contentFiles/any/net10.0/RhetosTools" />
   </files>
 </package>

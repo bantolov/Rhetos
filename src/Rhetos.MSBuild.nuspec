@@ -31,10 +31,10 @@
     The "rhetos build" command is executed from the "tools" folder here (in the user's package cache).
     Rhetos CLI needs to be on net8 or higher, so that it can load plugins from net8 libraries and lower versions. -->
     <!-- The "rhetos dbupdate" command is executed from the Rhetos.Host NuGet package (rhetos.dll ends in the app's bin folder). -->
-    <file src="RhetosCli\bin\Debug\net8.0\*.dll" target="tools" />
-    <file src="RhetosCli\bin\Debug\net8.0\rhetos.exe" target="tools" />
-    <file src="RhetosCli\bin\Debug\net8.0\rhetos.exe.nlog" target="tools" />
-    <file src="RhetosCli\bin\Debug\net8.0\rhetos.deps.json" target="tools" />
-    <file src="RhetosCli\bin\Debug\net8.0\rhetos.runtimeconfig.json" target="tools" />
+    <file src="RhetosCli\bin\Debug\net10.0\*.dll" target="tools" />
+    <file src="RhetosCli\bin\Debug\net10.0\rhetos.exe" target="tools" />
+    <file src="RhetosCli\bin\Debug\net10.0\rhetos.exe.nlog" target="tools" />
+    <file src="RhetosCli\bin\Debug\net10.0\rhetos.deps.json" target="tools" />
+    <file src="RhetosCli\bin\Debug\net10.0\rhetos.runtimeconfig.json" target="tools" />
   </files>
 </package>

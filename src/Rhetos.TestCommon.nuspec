@@ -12,15 +12,15 @@
     <copyright>Copyright Omega software 2013</copyright>
     <tags>Rhetos</tags>
     <dependencies>
-      <group targetFramework="net8.0">
+      <group targetFramework="net10.0">
         <dependency id="Rhetos" version="[6.1.0-dev,6.2.0)" />
-        <dependency id="MSTest.TestFramework" version="3.10.3" />
+        <dependency id="MSTest.TestFramework" version="4.1.0" />
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src="Rhetos.TestCommon\Readme.md" target="docs" />
-    <file src="Rhetos.TestCommon\bin\Debug\net8.0\Rhetos.TestCommon.dll" target="lib\net8.0" />
-    <file src="Rhetos.TestCommon\bin\Debug\net8.0\Rhetos.TestCommon.xml" target="lib\net8.0" />
+    <file src="Rhetos.TestCommon\bin\Debug\net10.0\Rhetos.TestCommon.dll" target="lib\net10.0" />
+    <file src="Rhetos.TestCommon\bin\Debug\net10.0\Rhetos.TestCommon.xml" target="lib\net10.0" />
   </files>
 </package>

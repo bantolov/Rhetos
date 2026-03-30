@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <RestoreAdditionalProjectSources>$(RestoreAdditionalProjectSources);..\..\dist</RestoreAdditionalProjectSources>
     <RootNamespace>CommonConcepts.Test</RootNamespace>
@@ -14,7 +14,7 @@
     <PackageReference Include="Rhetos" Version="6.1.0-dev*" />
     <PackageReference Include="Rhetos.CommonConcepts" Version="6.1.0-dev*" />
     <PackageReference Include="Rhetos.MsSql" Version="6.1.0-dev*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.19" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.3" />
   </ItemGroup>
 
   <ItemGroup>

@@ -12,14 +12,14 @@
     <copyright>Copyright Omega software 2013</copyright>
     <tags>Rhetos</tags>
     <dependencies>
-      <group targetFramework="net8.0">
-        <dependency id="Microsoft.EntityFrameworkCore" version="8.0.19" />
+      <group targetFramework="net10.0">
+        <dependency id="Microsoft.EntityFrameworkCore" version="10.0.5" />
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src="Rhetos.EfCore\Readme.md" target="docs" />
-    <file src="Rhetos.EfCore\bin\Debug\net8.0\Rhetos.EfCore.dll" target="lib\net8.0" />
-    <file src="Rhetos.EfCore\bin\Debug\net8.0\Rhetos.EfCore.xml" target="lib\net8.0" />
+    <file src="Rhetos.EfCore\bin\Debug\net10.0\Rhetos.EfCore.dll" target="lib\net10.0" />
+    <file src="Rhetos.EfCore\bin\Debug\net10.0\Rhetos.EfCore.xml" target="lib\net10.0" />
   </files>
 </package>

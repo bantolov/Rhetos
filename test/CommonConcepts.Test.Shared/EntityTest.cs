@@ -866,7 +866,7 @@ namespace CommonConcepts.Test
                 Assert.AreEqual(parent.Name, childParentNameQueried);
 
                 var childLoaded = repository.TestEntity.Child.Query(new[] { child.ID }).Single();
-                Assert.ThrowsException<NullReferenceException>(
+                Assert.ThrowsExactly<NullReferenceException>(
                     () => _ = childLoaded.Parent.Name);
             }
         }

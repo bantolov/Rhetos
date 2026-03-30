@@ -12,9 +12,9 @@
     <copyright>Copyright Omega software 2013</copyright>
     <tags>Rhetos</tags>
     <dependencies>
-      <group targetFramework="net8.0">
-        <dependency id="Microsoft.Data.SqlClient" version="6.1.1" />
-        <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="8.0.19" />
+      <group targetFramework="net10.0">
+        <dependency id="Microsoft.Data.SqlClient" version="7.0.0" />
+        <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="10.0.5" />
         <dependency id="Rhetos" version="[6.1.0-dev,6.2.0)" />
         <dependency id="Rhetos.CommonConcepts" version="[6.1.0-dev,6.2.0)" />
         <dependency id="Rhetos.EfCore" version="[6.1.0-dev,6.2.0)" />
@@ -24,7 +24,7 @@
   <files>
     <file src="Rhetos.MsSql\Readme.md" target="docs" />
     <file src="Rhetos.MsSql\Rhetos.MsSql.props" target="buildTransitive" />
-    <file src="Rhetos.MsSql\bin\Debug\net8.0\Rhetos.MsSql.dll" target="lib\net8.0" />
-    <file src="Rhetos.MsSql\bin\Debug\net8.0\Rhetos.MsSql.xml" target="lib\net8.0" />
+    <file src="Rhetos.MsSql\bin\Debug\net10.0\Rhetos.MsSql.dll" target="lib\net10.0" />
+    <file src="Rhetos.MsSql\bin\Debug\net10.0\Rhetos.MsSql.xml" target="lib\net10.0" />
   </files>
 </package>
