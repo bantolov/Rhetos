@@ -65,7 +65,7 @@ namespace Rhetos.Dom.DefaultConcepts.Persistence
             }
 
             byte[] hash = _sha256.ComputeHash(Encoding.UTF8.GetBytes(viewCacheState.ToString()));
-            return BitConverter.ToString(hash).Replace("-", "");
+            return Convert.ToHexString(hash);
         }
     }
 }

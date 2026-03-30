@@ -86,7 +86,7 @@ namespace Rhetos.Utilities
 
         public string SerializeArrayToXml<T>(T[] data)
         {
-            return SerializeToXml(data, typeof(T[]));
+            return SerializeToXml<T[]>(data);
         }
 
         public string SerializeArrayToXml(object data, Type element)
@@ -96,7 +96,7 @@ namespace Rhetos.Utilities
 
         public T[] DeserializeArrayFromXml<T>(string xml)
         {
-            return (T[]) DeserializeFromXml(typeof(T[]), xml);
+            return DeserializeFromXml<T[]>(xml);
         }
 
         public object DeserializeArrayFromXml(string xml, Type element)

@@ -34,7 +34,7 @@ using System.Threading.Tasks;
 
 namespace Rhetos
 {
-    public class Program
+    internal sealed class Program
     {
         const string ExecuteCommandInCurrentProcessOptionName = "--execute-command-in-current-process";
 

@@ -170,14 +170,14 @@ namespace Rhetos.Dom.DefaultConcepts
 
         public IDictionary<SystemRole, Guid> GetSystemRoles()
         {
-            string[] roleNames = Enum.GetNames(typeof(SystemRole));
+            string[] roleNames = Enum.GetNames<SystemRole>();
 
             return _roleRepository.Query()
                 .Where(role => roleNames.Contains(role.Name))
                 .Select(role => new { role.ID, role.Name }) // This select avoids loading extra columns from database.
                 .AsEnumerable()
                 .Where(role => roleNames.Contains(role.Name)) // Ignore any extra names returned by case-insensitive database search.
-                .ToDictionary(role => (SystemRole)Enum.Parse(typeof(SystemRole), role.Name), role => role.ID);
+                .ToDictionary(role => Enum.Parse<SystemRole>(role.Name), role => role.ID);
         }
 
         /// <summary>

@@ -52,7 +52,8 @@ namespace Rhetos.Host.Net
 
         public void Write(EventType eventType, Func<string> logMessage)
         {
-            _logger.Log(MapEventTypeToLogLevel(eventType), 0, logMessage, null, (state, exception) => state());
+            var logLevel = MapEventTypeToLogLevel(eventType);
+            _logger.Log(logLevel, 0, logMessage, null, (state, exception) => state());
         }
 
         public LogLevel MapEventTypeToLogLevel(EventType eventType)
