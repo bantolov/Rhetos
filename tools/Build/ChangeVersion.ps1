@@ -52,8 +52,9 @@ RegexReplace 'Directory.Build.props' '([\n^]\s*\<FileVersion\>).*(\<\/FileVersio
 RegexReplace 'CommonConcepts.Test.*.csproj' '([\n^]\s*\<PackageReference Include=\"Rhetos.*?\" Version=\").*?(\")' ('${1}' + $version + '-dev*${2}')
 RegexReplace 'CommonConcepts.TestApp.*.csproj' '([\n^]\s*\<PackageReference Include=\"Rhetos.*?\" Version=\").*?(\")' ('${1}' + $version + '-dev*${2}')
 
-# CommonConcepts is developed together with Rhetos framework, so it is expected to match the release version. Difference in patch version (Build) is allowed here.
-If ($Version.Build -gt 0)
+# CommonConcepts is developed together with Rhetos framework, so it is expected to match the release version. Difference in patch version (Build) is allowed here, for final (stable) releases only.
+# Prerelease builds use the full version as the minimum, so that prerelease dependencies can be resolved from the local dist feed (a stable-only range would fail with NU1103 when no stable Major.Minor.0 release is published, and a lower prerelease minimum would report NU1603 on restore).
+If ($Version.Build -gt 0 -and -not $prereleaseSuffix)
 {
     $minFrameworkVersion = $version.Major.ToString() + '.' + $version.Minor.ToString() + '.0'
 }

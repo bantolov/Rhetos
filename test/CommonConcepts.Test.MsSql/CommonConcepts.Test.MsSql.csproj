@@ -15,7 +15,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Rhetos.TestCommon" Version="6.1.0-dev*" />
+    <PackageReference Include="Rhetos.TestCommon" Version="6.1.1-dev*" />
   </ItemGroup>
   
   <ItemGroup>

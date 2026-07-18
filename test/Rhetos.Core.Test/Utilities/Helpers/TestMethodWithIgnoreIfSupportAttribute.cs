@@ -19,6 +19,7 @@
 
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -31,6 +32,11 @@ namespace Rhetos.Utilities.Test.Helpers
     /// </summary>
     public class TestMethodWithIgnoreIfSupportAttribute : TestMethodAttribute
     {
+        public TestMethodWithIgnoreIfSupportAttribute([CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = -1)
+            : base(callerFilePath, callerLineNumber)
+        {
+        }
+
         public override Task<TestResult[]> ExecuteAsync(ITestMethod testMethod)
         {
             var ignoreAttributes = FindAttributes(testMethod);

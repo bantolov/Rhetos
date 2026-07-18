@@ -1,5 +1,35 @@
 # Rhetos release notes
 
+## 6.1.1 (TO BE RELEASED)
+
+### Breaking changes
+
+* Migrated from .NET 8 to **.NET 10**. Updated C# version from v12 to v14 (default for .NET 10).
+  * Update the existing projects (.csproj) by setting `TargetFramework` to `net10.0`, and updating `PackageReference` for
+    `System.*` and `Microsoft.*` packages to the latest version (`10.0.0` or higher).
+  * If the file exists, update `LangVersion` in the `Directory.Build.props` file from `12.0` to `14`.
+* **Rhetos.MsSql** (EF Core provider): updated from Entity Framework Core 8 to **EF Core 10**, with Microsoft.Data.SqlClient 6.1.6.
+  * EF Core 10 translates a parameterized collection in a LINQ `Contains` query to multiple scalar parameters,
+    instead of a JSON-array parameter with OPENJSON (the EF Core 8 behavior). The query results are unchanged,
+    but the generated SQL text and query plans are different: update any tests that assert the generated SQL text,
+    and expect query-plan cache invalidation on the first deployment.
+  * EF Core 10 also simplifies the generated SQL parameter names (for example, `@__p_0` becomes `@p1`).
+* **Rhetos.MsSqlEf6** (EF 6 provider): updated EntityFramework to **6.5.2**, the first version that supports
+  applications compiled with C# 14 on .NET 10 (the C# 14 "first-class spans" feature changes `.Contains()` overload
+  resolution on arrays, which broke LINQ query translation on earlier EF 6 versions).
+  * Rhetos's `Contains` query optimization (`EFExpression.OptimizeContains`) is also updated to recognize the
+    C# 14 span-based `array.Contains()` pattern, so those queries remain parameterized (with SQL query plan reuse)
+    when the application is compiled with C# 14.
+* Updated **Autofac** from 8.4.0 to 9.3.1.
+
+### Internal improvements
+
+* Updated other dependencies to .NET 10-compatible versions: Microsoft.Extensions.* and
+  System.Configuration.ConfigurationManager 10.0.5, System.Text.Encoding.CodePages 10.0.10,
+  Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1 (PostgreSQL provider), Microsoft.CodeAnalysis.CSharp 5.3.0,
+  NuGet.ProjectModel 6.14.3 (resolves security advisory GHSA-g4vj-cjjj-v7hg), MSTest 4.1.
+* LINQPad integration updated for LINQPad 9 (.NET 10 runtime paths).
+
 ## 6.0.0 (2025-09-02)
 
 ### New features

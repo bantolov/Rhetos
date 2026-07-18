@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>Rhetos.MSBuild</id>
-    <version>6.1.0-dev</version>
+    <version>6.1.1-dev</version>
     <authors>Omega software</authors>
     <owners>Omega software</owners>
     <license type="expression">AGPL-3.0-only</license>
@@ -12,7 +12,7 @@
     <copyright>Copyright Omega software 2013</copyright>
     <tags>Rhetos</tags>
     <dependencies>
-      <dependency id="Rhetos" version="[6.1.0-dev,6.2.0)" />
+      <dependency id="Rhetos" version="[6.1.1-dev,6.2.0)" />
     </dependencies>
   </metadata>
   <files>
@@ -29,7 +29,7 @@
     
     <!-- The NuGet "tools" folder contains the Rhetos CLI.
     The "rhetos build" command is executed from the "tools" folder here (in the user's package cache).
-    Rhetos CLI needs to be on net8 or higher, so that it can load plugins from net8 libraries and lower versions. -->
+    Rhetos CLI needs to be on net10 or higher, so that it can load plugins from net10 libraries and lower versions. -->
     <!-- The "rhetos dbupdate" command is executed from the Rhetos.Host NuGet package (rhetos.dll ends in the app's bin folder). -->
     <file src="RhetosCli\bin\Debug\net10.0\*.dll" target="tools" />
     <file src="RhetosCli\bin\Debug\net10.0\rhetos.exe" target="tools" />

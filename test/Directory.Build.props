@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <LangVersion>13</LangVersion>
+    <LangVersion>14</LangVersion>
     <NoWarn>CA1861</NoWarn>
   </PropertyGroup>
 </Project>

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>Rhetos.Host</id>
-    <version>6.1.0-dev</version>
+    <version>6.1.1-dev</version>
     <authors>Omega software</authors>
     <owners>Omega software</owners>
     <license type="expression">AGPL-3.0-only</license>
@@ -12,7 +12,7 @@
     <copyright>Copyright Omega software 2013</copyright>
     <tags>Rhetos</tags>
     <dependencies>
-      <dependency id="Rhetos" version="[6.1.0-dev,6.2.0)" />
+      <dependency id="Rhetos" version="[6.1.1-dev,6.2.0)" />
       <dependency id="System.CommandLine" version="2.0.0-beta4.22272.1" /> <!-- For RhetosCli. -->
     </dependencies>
     <contentFiles>
@@ -29,7 +29,7 @@
     <file src="RhetosVSIntegration\MsBuildIntegrationDbUpdate\Rhetos.Host.props" target="build" />
 
     <!-- The "rhetos dbupdate" command is executed from this package (rhetos.dll ends in the app's bin folder).
-    This version of Rhetos CLI needs to be on net8 or lower, so that it can run in the context of the net8 host applications. -->
+    This version of Rhetos CLI needs to be on net10 or lower, so that it can run in the context of the net10 host applications. -->
     <file src="RhetosCli\bin\Debug\net10.0\rhetos.exe" target="contentFiles/any/net10.0/RhetosTools" />
     <file src="RhetosCli\bin\Debug\net10.0\rhetos.dll" target="contentFiles/any/net10.0/RhetosTools" />
     <file src="RhetosCli\bin\Debug\net10.0\rhetos.runtimeconfig.json" target="contentFiles/any/net10.0/RhetosTools" />
