@@ -25,7 +25,8 @@
 ### Internal improvements
 
 * Updated other dependencies to .NET 10-compatible versions: Microsoft.Extensions.* and
-  System.Configuration.ConfigurationManager 10.0.5, System.Text.Encoding.CodePages 10.0.10,
+  System.Configuration.ConfigurationManager 10.0.5, System.ComponentModel.Composition 10.0.5,
+  System.Security.Cryptography.Pkcs 10.0.5, System.Text.Encoding.CodePages 10.0.10,
   Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1 (PostgreSQL provider), Microsoft.CodeAnalysis.CSharp 5.3.0,
   NuGet.ProjectModel 6.14.3 (resolves security advisory GHSA-g4vj-cjjj-v7hg), MSTest 4.1.
 * LINQPad integration updated for LINQPad 9 (.NET 10 runtime paths).
