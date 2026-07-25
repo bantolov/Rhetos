@@ -22,6 +22,13 @@
     when the application is compiled with C# 14.
 * Updated **Autofac** from 8.4.0 to 9.3.1.
 
+### Performance improvements
+
+* The `GenericToSimple` method in the generated `QueryExtensions` class now caches the resolved entity-specific
+  `ToSimple` method (see the new `ToSimpleMethodCache` class), instead of scanning all generated overloads
+  with reflection on each call. This reduces CPU usage of the repository `Load()` and `Load(ids)` methods
+  and other generic reading features, most noticeably on applications with a large number of entities.
+
 ### Internal improvements
 
 * Updated other dependencies to .NET 10-compatible versions: Microsoft.Extensions.* and

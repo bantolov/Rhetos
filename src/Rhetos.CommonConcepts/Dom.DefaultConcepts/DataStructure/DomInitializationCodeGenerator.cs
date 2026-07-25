@@ -108,9 +108,7 @@ namespace System.Linq
         public static IQueryable<TEntity> GenericToSimple<TEntity>(this IQueryable<IEntity> i)
             where TEntity : class, IEntity
 	    {{
-            var method = typeof(QueryExtensions).GetMethod(""ToSimple"", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, null, new Type[] {{ i.GetType() }}, null);
-            if (method == null)
-                throw new Rhetos.FrameworkException(""Cannot find 'ToSimple' method for argument type '"" + i.GetType().ToString() + ""'."");
+            var method = Rhetos.Dom.DefaultConcepts.ToSimpleMethodCache.GetToSimpleMethod(typeof(QueryExtensions), i.GetType());
             return (IQueryable<TEntity>)Rhetos.Utilities.ExceptionsUtility.InvokeEx(method, null, new object[] {{ i }});
         }}
 
