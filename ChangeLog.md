@@ -37,8 +37,11 @@
   With zero records in the source, the interpreted execution returns exactly the same result and is always
   cheaper, because the expression compilation cost is paid per query execution, not per record.
   These branches run on nearly every `Save`.
-  * Optional diagnostics: assign the `QueryableHelper.Telemetry` callback to record row count, expression shape
-    and execution time for each interpreted query execution.
+  * A subtle breaking change: these framework-created empty queries are no longer `System.Linq.EnumerableQuery`
+    instances. Application and plugin code should not test for the concrete query class; the contract
+    is `IQueryable<T>`.
+  * Optional diagnostics: assign the `QueryableHelper.Telemetry` callback to record source record count,
+    expression shape and per-execution overhead for each interpreted query execution.
 
 ### Internal improvements
 

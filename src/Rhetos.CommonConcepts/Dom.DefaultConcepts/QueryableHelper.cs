@@ -28,11 +28,11 @@ namespace Rhetos.Dom.DefaultConcepts
     /// </summary>
     public sealed class InterpretedQueryTelemetry
     {
-        public InterpretedQueryTelemetry(string expressionShape, int sourceCount, TimeSpan elapsed, bool interpreted)
+        public InterpretedQueryTelemetry(string expressionShape, int sourceCount, TimeSpan overhead, bool interpreted)
         {
             ExpressionShape = expressionShape;
             SourceCount = sourceCount;
-            Elapsed = elapsed;
+            Overhead = overhead;
             Interpreted = interpreted;
         }
 
@@ -42,14 +42,17 @@ namespace Rhetos.Dom.DefaultConcepts
         public string ExpressionShape { get; }
 
         /// <summary>
-        /// Number of records in the source collection.
+        /// Number of records in the source collection when the query was executed.
         /// </summary>
         public int SourceCount { get; }
 
         /// <summary>
-        /// Total time of the query execution, including the expression analysis and compilation.
+        /// The per-execution fixed cost of the query: the expression analysis and rewrite, and the interpreter setup
+        /// (on the standard queryable fallback, only the rewrite). It excludes the deferred per-record enumeration
+        /// of queries that return a sequence (and, on the fallback, the deferred expression compilation and execution).
+        /// Queries that return a scalar value (e.g. <c>Count</c> or <c>First</c>) are measured completely.
         /// </summary>
-        public TimeSpan Elapsed { get; }
+        public TimeSpan Overhead { get; }
 
         /// <summary>
         /// True if the query was executed by the expression interpreter,
@@ -72,6 +75,8 @@ namespace Rhetos.Dom.DefaultConcepts
         /// <summary>
         /// Optional diagnostics callback, called on each execution of an <see cref="InterpretedQueryable{T}"/> query.
         /// It is null by default, and it should be left null in production, since it is called on each query execution.
+        /// The callback may be invoked concurrently from multiple threads, so it must be thread-safe
+        /// (for example, collect the records into a concurrent collection, or use locking).
         /// </summary>
         public static Action<InterpretedQueryTelemetry> Telemetry { get; set; }
 
@@ -86,7 +91,8 @@ namespace Rhetos.Dom.DefaultConcepts
         /// per query execution, not per record. Query expressions that cannot be interpreted still fall back
         /// to the standard behavior, see <see cref="InterpretedQueryable{T}"/>.
         /// <para>
-        /// A single instance is cached for each element type: the returned query is immutable, it reads the source
+        /// A single instance is cached for each element type: the returned query has no observable mutable state
+        /// (its only mutable state is an internal lazily initialized cache, which is thread-safe), it reads the source
         /// collection on each execution, and <c>Array.Empty&lt;T&gt;()</c> is a shared singleton instance.
         /// Composing additional query operators over the returned instance creates new instances,
         /// it does not modify the cached one.
