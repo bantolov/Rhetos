@@ -35,11 +35,14 @@ namespace Rhetos.Dom.DefaultConcepts
         {
             var info = (LoadOldItemsInfo)conceptInfo;
 
+            // DomHelper.ToListOrEmpty skips the query execution when the IDs list is empty (on a save that only
+            // inserts or only updates the records), to avoid compiling the query expression to IL code (a temporary
+            // DynamicMethod) on each Save, even though there are no records to read.
             string snippet =
             $@"var updatedIdsList = updatedNew.Select(item => item.ID).ToList();
             var deletedIdsList = deletedIds.Select(item => item.ID).ToList();
-            var updatedOld = Filter(Query(), updatedIdsList).Select(item => new {{ item.ID{SelectPropertiesTag.Evaluate(info)} }}).ToList();
-            var deletedOld = Filter(Query(), deletedIdsList).Select(item => new {{ item.ID{SelectPropertiesTag.Evaluate(info)} }}).ToList();
+            var updatedOld = DomHelper.ToListOrEmpty(Filter(Query(), updatedIdsList).Select(item => new {{ item.ID{SelectPropertiesTag.Evaluate(info)} }}), updatedIdsList.Count > 0);
+            var deletedOld = DomHelper.ToListOrEmpty(Filter(Query(), deletedIdsList).Select(item => new {{ item.ID{SelectPropertiesTag.Evaluate(info)} }}), deletedIdsList.Count > 0);
             Rhetos.Utilities.Graph.SortByGivenOrder(updatedOld, updatedIdsList, item => item.ID);
             Rhetos.Utilities.Graph.SortByGivenOrder(deletedOld, deletedIdsList, item => item.ID);
 
