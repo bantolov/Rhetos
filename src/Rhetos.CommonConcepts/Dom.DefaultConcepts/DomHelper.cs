@@ -139,5 +139,19 @@ namespace Rhetos.Dom.DefaultConcepts
                 return loaded;
             });
         }
+
+        /// <summary>
+        /// Executes the given query and returns the resulting list,
+        /// or returns an empty list without executing the query if <paramref name="hasItems"/> is false.
+        /// </summary>
+        /// <remarks>
+        /// It is intended for queries that are known in advance to return no records (for example, a query
+        /// filtered by an empty list of IDs). Skipping the execution of an in-memory query
+        /// (<see cref="EnumerableQuery{T}"/>) avoids the standard .NET behavior that compiles the query's
+        /// expression tree to IL code (a temporary DynamicMethod) on each execution,
+        /// even though there are no records to read.
+        /// </remarks>
+        public static List<T> ToListOrEmpty<T>(IQueryable<T> query, bool hasItems)
+            => hasItems ? query.ToList() : new List<T>();
     }
 }

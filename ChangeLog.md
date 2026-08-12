@@ -28,6 +28,13 @@
   `ToSimple` method (see the new `ToSimpleMethodCache` class), instead of scanning all generated overloads
   with reflection on each call. This reduces CPU usage of the repository `Load()` and `Load(ids)` methods
   and other generic reading features, most noticeably on applications with a large number of entities.
+* The generated `Save` method's old-data loading (the `LoadOldItems` concept, used by `ModificationTimeOf`
+  and similar features) now skips the query execution when the list of updated or deleted IDs is empty
+  (see the new `DomHelper.ToListOrEmpty` method). Previously, the empty-list query still compiled its
+  expression tree to IL code (a temporary `DynamicMethod`) on each `Save`, even though there were no records
+  to read. On a save that only inserts, or only updates, or only deletes the records, this removes one or two
+  of these throwaway compilations per `Save` — which is nearly every save, since a single save rarely combines
+  updates and deletions.
 
 ### Internal improvements
 
