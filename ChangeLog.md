@@ -28,6 +28,17 @@
   `ToSimple` method (see the new `ToSimpleMethodCache` class), instead of scanning all generated overloads
   with reflection on each call. This reduces CPU usage of the repository `Load()` and `Load(ids)` methods
   and other generic reading features, most noticeably on applications with a large number of entities.
+* The *empty* queries that are created by the framework are now executed with the .NET expression interpreter
+  (see the new `QueryableHelper.EmptyInterpreted` method and the `InterpretedQueryable` class), instead of
+  the standard .NET behavior that compiles the composed query's expression tree to IL (a temporary
+  `DynamicMethod`) on each query execution, even though there are no records to read. This applies to
+  the generated `Filter(query, ids)` method for an empty list of IDs (used by the generated `Save` method
+  when loading the old values, and by the `Lock*` concepts), and the deny-all row permissions filter.
+  With zero records in the source, the interpreted execution returns exactly the same result and is always
+  cheaper, because the expression compilation cost is paid per query execution, not per record.
+  These branches run on nearly every `Save`.
+  * Optional diagnostics: assign the `QueryableHelper.Telemetry` callback to record row count, expression shape
+    and execution time for each interpreted query execution.
 
 ### Internal improvements
 
