@@ -31,6 +31,22 @@ namespace Rhetos.Dom.DefaultConcepts
     /// </summary>
     public static class DomHelper
     {
+        private static class EmptyQueryableCache<T>
+        {
+            public static readonly IQueryable<T> Instance = Array.Empty<T>().AsQueryable();
+        }
+
+        /// <summary>
+        /// Returns a shared empty in-memory query that can be recognized by <see cref="IsKnownEmpty{T}"/>.
+        /// </summary>
+        public static IQueryable<T> EmptyQueryable<T>() => EmptyQueryableCache<T>.Instance;
+
+        /// <summary>
+        /// Returns true only for the shared query returned by <see cref="EmptyQueryable{T}"/> with the same element type.
+        /// Does not enumerate the source. Other sources, including queries composed over the shared query, return false.
+        /// </summary>
+        public static bool IsKnownEmpty<T>(IEnumerable<T> items) => ReferenceEquals(items, EmptyQueryableCache<T>.Instance);
+
         /// <summary>
         /// Initializes <paramref name="insertedNew"/> IDs, where not set.
         /// If a LINQ query is provided as an argument, materializes it to a list.

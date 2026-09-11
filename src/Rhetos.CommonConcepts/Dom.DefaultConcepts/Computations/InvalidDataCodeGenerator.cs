@@ -84,7 +84,10 @@ namespace Rhetos.Dom.DefaultConcepts
             string validationSnippet =
             $@"if ({(allowSave ? "!" : "")}onSave)
             {{
-                var errorIds = this.Filter(this.Query(ids), new {info.FilterType}()).Select(item => item.ID).ToArray();
+                var invalidItems = this.Filter(this.Query(ids), new {info.FilterType}());
+                var errorIds = DomHelper.IsKnownEmpty(invalidItems)
+                    ? Array.Empty<Guid>()
+                    : invalidItems.Select(item => item.ID).ToArray();
                 if (errorIds.Count() > 0)
                     foreach (var error in {info.GetErrorMessageMethodName()}(errorIds))
                         yield return error;

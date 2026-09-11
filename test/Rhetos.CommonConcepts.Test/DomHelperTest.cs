@@ -23,12 +23,70 @@ using Rhetos.TestCommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Rhetos.CommonConcepts.Test
 {
     [TestClass]
     public class DomHelperTest
     {
+        [TestMethod]
+        public void EmptyQueryableUsesOneEnumerableQueryPerElementType()
+        {
+            var query = DomHelper.EmptyQueryable<string>();
+
+            Assert.AreSame(query, DomHelper.EmptyQueryable<string>());
+            Assert.AreNotSame(query, DomHelper.EmptyQueryable<object>());
+            Assert.IsInstanceOfType<EnumerableQuery<string>>(query);
+            Assert.IsTrue(DomHelper.IsKnownEmpty(query));
+            IEnumerable<string> enumerable = query;
+            Assert.IsTrue(DomHelper.IsKnownEmpty(enumerable));
+            Assert.AreEqual(0, enumerable.ToArray().Length);
+        }
+
+        [TestMethod]
+        public void IsKnownEmptyDoesNotInspectOrEnumerateOtherSources()
+        {
+            Assert.IsFalse(DomHelper.IsKnownEmpty(Array.Empty<string>()));
+            Assert.IsFalse(DomHelper.IsKnownEmpty(Array.Empty<string>().AsQueryable()));
+            Assert.IsFalse(DomHelper.IsKnownEmpty(new[] { "item" }.AsQueryable()));
+            Assert.IsFalse(DomHelper.IsKnownEmpty(ThrowingSource()));
+            Assert.IsFalse(DomHelper.IsKnownEmpty(ThrowingSource().AsQueryable()));
+            Assert.IsFalse(DomHelper.IsKnownEmpty<string>(null));
+        }
+
+        [TestMethod]
+        public void IsKnownEmptyDoesNotRecognizeComposedQueries()
+        {
+            var empty = DomHelper.EmptyQueryable<string>();
+            var filtered = empty.Where(item => item.Length > 0);
+            var withDefault = empty.DefaultIfEmpty("default");
+            var withAdditionalItem = empty.Concat(new[] { "added" });
+
+            Assert.IsFalse(DomHelper.IsKnownEmpty(filtered));
+            Assert.IsFalse(DomHelper.IsKnownEmpty(withDefault));
+            Assert.IsFalse(DomHelper.IsKnownEmpty(withAdditionalItem));
+            Assert.AreEqual("default", withDefault.Single());
+            Assert.AreEqual("added", withAdditionalItem.Single());
+            Assert.IsTrue(DomHelper.IsKnownEmpty(empty));
+            Assert.AreEqual(0, empty.AsEnumerable().ToArray().Length);
+        }
+
+        [TestMethod]
+        public void EmptyQueryableSupportsConcurrentDirectEnumeration()
+        {
+            var query = DomHelper.EmptyQueryable<Guid>();
+
+            Parallel.For(0, 100, _ =>
+            {
+                Assert.AreSame(query, DomHelper.EmptyQueryable<Guid>());
+                using var first = query.GetEnumerator();
+                using var second = query.GetEnumerator();
+                Assert.IsFalse(first.MoveNext());
+                Assert.IsFalse(second.MoveNext());
+            });
+        }
+
         [TestMethod]
         public void ToListOrEmptyExecutesQueryWithItems()
         {

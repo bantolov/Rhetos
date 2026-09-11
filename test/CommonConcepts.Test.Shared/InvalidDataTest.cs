@@ -34,6 +34,49 @@ namespace CommonConcepts.Test
     [TestClass]
     public class InvalidDataTest
     {
+        [TestMethod]
+        public void QueryFilterWithNoInvalidItemsReturnsKnownEmptyQuery()
+        {
+            using (var scope = TestScope.Create())
+            {
+                var repository = scope.Resolve<Common.DomRepository>().TestInvalidData.KnownEmptyQuery;
+                var item = new TestInvalidData.KnownEmptyQuery { Count = 1 };
+                repository.Insert(item);
+
+                var filtered = repository.Filter(repository.Query(new[] { item.ID }), new TestInvalidData.InvalidQueryItems());
+                Assert.IsTrue(DomHelper.IsKnownEmpty(filtered));
+                Assert.AreEqual(0, repository.Validate(new[] { item.ID }, onSave: true).Count());
+
+                item.Count = 2;
+                repository.Update(item);
+
+                item.Count = -1;
+                TestUtility.ShouldFail<Rhetos.UserException>(
+                    () => repository.Update(item),
+                    "Count must not be negative", "ID:" + item.ID);
+            }
+        }
+
+        [TestMethod]
+        public void EnumerableValidationFilterPreservesValidAndInvalidResults()
+        {
+            using (var scope = TestScope.Create())
+            {
+                var repository = scope.Resolve<Common.DomRepository>().TestInvalidData.EnumerableFilter;
+                var item = new TestInvalidData.EnumerableFilter { Count = 1 };
+                repository.Insert(item);
+                Assert.AreEqual(0, repository.Validate(new[] { item.ID }, onSave: true).Count());
+
+                item.Count = 2;
+                repository.Update(item);
+
+                item.Count = -1;
+                TestUtility.ShouldFail<Rhetos.UserException>(
+                    () => repository.Update(item),
+                    "Enumerable Count must not be negative", "ID:" + item.ID);
+            }
+        }
+
         private static void AssertData(Common.DomRepository repository, string expected)
         {
             Assert.AreEqual(expected, TestUtility.DumpSorted(repository.TestInvalidData.Simple.Query(), item => item.Name));

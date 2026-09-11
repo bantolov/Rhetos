@@ -1,5 +1,28 @@
 ﻿Module TestInvalidData
 {
+    Parameter InvalidQueryItems;
+    Parameter InvalidEnumerableItems;
+
+    Entity KnownEmptyQuery
+    {
+        Integer Count;
+
+        QueryFilter InvalidQueryItems '(query, parameter) =>
+        {
+            var invalidIds = query.Where(item => item.Count < 0).Select(item => item.ID).ToList();
+            return Filter(query, invalidIds);
+        }';
+        InvalidData InvalidQueryItems '[Test] Count must not be negative.';
+    }
+
+    Entity EnumerableFilter
+    {
+        Integer Count;
+
+        Filter InvalidEnumerableItems '(items, parameter) => items.Where(item => item.Count < 0)';
+        InvalidData InvalidEnumerableItems '[Test] Enumerable Count must not be negative.';
+    }
+
 	Entity Simple
 	{
 		ShortString Name { Unique; }

@@ -420,7 +420,7 @@ namespace Common
             }}
             else if (!ids.Any())
             {{
-                return Array.Empty<TQueryableEntity>().AsQueryable();
+                return DomHelper.EmptyQueryable<TQueryableEntity>();
             }}
             else
             {{

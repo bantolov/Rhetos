@@ -24,6 +24,9 @@
 
 ### Performance improvements
 
+* `InvalidData` validation skips ID projection and enumeration when its filter returns the shared empty query
+  from the repository's ID filter. This avoids temporary expression compilations for successful validations
+  such as `RegExMatch`. Other filter results retain their existing query execution behavior.
 * The `GenericToSimple` method in the generated `QueryExtensions` class now caches the resolved entity-specific
   `ToSimple` method (see the new `ToSimpleMethodCache` class), instead of scanning all generated overloads
   with reflection on each call. This reduces CPU usage of the repository `Load()` and `Load(ids)` methods
