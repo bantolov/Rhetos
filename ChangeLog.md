@@ -38,6 +38,11 @@
   to read. On a save that only inserts, or only updates, or only deletes the records, this removes one or two
   of these throwaway compilations per `Save` — which is nearly every save, since a single save rarely combines
   updates and deletions.
+  * The old data (the `updatedOld` and `deletedOld` variables in the `Save` method) is now loaded into
+    the generated `OldItem` class, nested in the entity's repository class, instead of an anonymous class.
+    The property names are unchanged, so the existing `OnSaveUpdate`, `OnSaveValidate` and `AfterSave` code
+    snippets that use the old data do not need to be modified. The concrete type can now be used in helper methods,
+    for example `void Validate(List<OldItem> updatedOld)` in the repository's partial class.
 
 ### Internal improvements
 
