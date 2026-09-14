@@ -198,9 +198,15 @@ namespace Rhetos.Dom.DefaultConcepts
 
             if (filterSave != null)
             {
-                toInsert = filterSave(toInsert);
-                toUpdate = filterSave(toUpdate);
-                toDelete = filterSave(toDelete);
+                // The filter is not applied to an empty list, to avoid the filter's overhead on a recompute that
+                // only inserts, or only updates, or only deletes the records. The filter is a custom expression
+                // (see the KeepSynchronized and ComputeForNewItems concepts) that often executes a query.
+                if (toInsert.Any())
+                    toInsert = filterSave(toInsert);
+                if (toUpdate.Any())
+                    toUpdate = filterSave(toUpdate);
+                if (toDelete.Any())
+                    toDelete = filterSave(toDelete);
                 CsUtility.Materialize(ref toInsert);
                 CsUtility.Materialize(ref toUpdate);
                 CsUtility.Materialize(ref toDelete);

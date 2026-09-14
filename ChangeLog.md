@@ -50,6 +50,11 @@
   compile its expression tree to IL code (a temporary `DynamicMethod`) on each `Save`, even though there are
   no records to read. On a save that only inserts, or only updates, or only deletes the records, this removes
   one of these throwaway compilations per `KeepSynchronized` dependency — which is nearly every save.
+* `ComputedFromHelper.InsertOrUpdateOrDelete` (used by the `KeepSynchronized` recompute and the other
+  `ComputedFrom` features) no longer applies the save filter to the empty lists of records to insert,
+  update or delete. The save filter is a custom expression (see the `KeepSynchronized` and
+  `ComputeForNewItems` concepts) that often executes a query, so this removes up to two redundant
+  filter executions per recompute.
 
 ### Internal improvements
 
