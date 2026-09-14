@@ -66,12 +66,24 @@ namespace Rhetos.Dom.DefaultConcepts
                 + uniqueNumber;
         }
 
+        /// <remarks>
+        /// The filter is not created if there are no old items, to avoid the filter's overhead on a save that only inserts the records.
+        /// The filter formula often executes a query over the changed items (see <see cref="ChangesOnReferencedInfo"/>, for example),
+        /// and the in-memory query would compile its expression tree to IL code (a temporary DynamicMethod) on each execution,
+        /// even though there are no records to read.
+        /// The materialized <c>updatedNew</c> and <c>deletedIds</c> lists are checked instead of <c>updated</c> and <c>deleted</c>,
+        /// because the latter are lazy (see <see cref="DomHelper.LazyLoadData"/>) and checking them would load the old data
+        /// even for the filter formulas that do not use the changed items.
+        /// </remarks>
         private static string FilterOldItemsBeforeSaveSnippet(DataStructureInfo hookOnSaveEntity, string filterType, string filterFormula, string uniqueName)
         {
             return
             $@"Func<IEnumerable<{hookOnSaveEntity.Module.Name}.{hookOnSaveEntity.Name}>, {filterType}> filterLoadKeepSynchronizedOnChangedItems{uniqueName} =
                 {filterFormula};
-            {filterType} filterKeepSynchronizedOnChangedItems{uniqueName}Old = filterLoadKeepSynchronizedOnChangedItems{uniqueName}(updated.Concat(deleted));
+            bool hasKeepSynchronizedOnChangedItems{uniqueName}Old = updatedNew.Any() || deletedIds.Any();
+            {filterType} filterKeepSynchronizedOnChangedItems{uniqueName}Old = hasKeepSynchronizedOnChangedItems{uniqueName}Old
+                ? filterLoadKeepSynchronizedOnChangedItems{uniqueName}(updated.Concat(deleted))
+                : default;
 
             ";
         }
@@ -86,14 +98,19 @@ namespace Rhetos.Dom.DefaultConcepts
             return
                 $@"{OverrideRecomputeTag(info)}
                 {{
-                    {filterType} filteredNew = filterLoadKeepSynchronizedOnChangedItems{uniqueName}(inserted.Concat(updated));
-                    {filterType} optimizedFilter;
-                    if (KeepSynchronizedHelper.OptimizeFiltersUnion(filteredNew, filterKeepSynchronizedOnChangedItems{uniqueName}Old, out optimizedFilter))
+                    bool hasNew = inserted.Any() || updated.Any();
+                    {filterType} filteredNew = hasNew
+                        ? filterLoadKeepSynchronizedOnChangedItems{uniqueName}(inserted.Concat(updated))
+                        : default;
+                    if (hasKeepSynchronizedOnChangedItems{uniqueName}Old && hasNew
+                        && KeepSynchronizedHelper.OptimizeFiltersUnion(filteredNew, filterKeepSynchronizedOnChangedItems{uniqueName}Old, out {filterType} optimizedFilter))
                         _domRepository.{recomputeMethodName}(optimizedFilter);
                     else
                     {{
-                        _domRepository.{recomputeMethodName}(filterKeepSynchronizedOnChangedItems{uniqueName}Old);
-                        _domRepository.{recomputeMethodName}(filteredNew);
+                        if (hasKeepSynchronizedOnChangedItems{uniqueName}Old)
+                            _domRepository.{recomputeMethodName}(filterKeepSynchronizedOnChangedItems{uniqueName}Old);
+                        if (hasNew)
+                            _domRepository.{recomputeMethodName}(filteredNew);
                     }}
                 }}
 

@@ -43,6 +43,13 @@
     The property names are unchanged, so the existing `OnSaveUpdate`, `OnSaveValidate` and `AfterSave` code
     snippets that use the old data do not need to be modified. The concrete type can now be used in helper methods,
     for example `void Validate(List<OldItem> updatedOld)` in the repository's partial class.
+* The generated `Save` method skips creating the `KeepSynchronized` recompute filters (the `ChangesOnChangedItems`
+  concept and the features based on it, such as `ChangesOnReferenced` and `ChangesOnLinkedItems`) for the
+  record groups that are empty, instead of creating a filter from an empty list of changed items and recomputing
+  nothing. The filter formula usually executes a query over the changed items, and the in-memory query would
+  compile its expression tree to IL code (a temporary `DynamicMethod`) on each `Save`, even though there are
+  no records to read. On a save that only inserts, or only updates, or only deletes the records, this removes
+  one of these throwaway compilations per `KeepSynchronized` dependency — which is nearly every save.
 
 ### Internal improvements
 
